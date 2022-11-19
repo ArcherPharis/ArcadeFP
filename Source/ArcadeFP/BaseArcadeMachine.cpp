@@ -3,6 +3,7 @@
 
 #include "BaseArcadeMachine.h"
 #include "InteractableComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseArcadeMachine::ABaseArcadeMachine()
@@ -11,6 +12,8 @@ ABaseArcadeMachine::ABaseArcadeMachine()
 	PrimaryActorTick.bCanEverTick = true;
 	rootComp = CreateDefaultSubobject<USceneComponent>(TEXT("rootComponent"));
 	SetRootComponent(rootComp);
+	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	mesh->SetupAttachment(GetRootComponent());
 	interactableComponent = CreateDefaultSubobject<UInteractableComponent>(TEXT("InteractableComponent"));
 
 }
@@ -19,7 +22,18 @@ ABaseArcadeMachine::ABaseArcadeMachine()
 void ABaseArcadeMachine::BeginPlay()
 {
 	Super::BeginPlay();
+	interactableComponent->onInteracted.AddDynamic(this, &ABaseArcadeMachine::BeginGame);
 	
+}
+
+void ABaseArcadeMachine::BeginGame(AActor* interactor)
+{
+	UE_LOG(LogTemp, Warning, TEXT("From the base class's Begin Game"));
+}
+
+void ABaseArcadeMachine::LoadLevel(FName levelName)
+{
+	UGameplayStatics::OpenLevel(GetWorld(), levelName);
 }
 
 // Called every frame
