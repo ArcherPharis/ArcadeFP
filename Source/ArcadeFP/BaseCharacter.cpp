@@ -2,7 +2,13 @@
 
 
 #include "BaseCharacter.h"
+#include "BaseArcadeMachine.h"
+#include "InteractableComponent.h"
+#include "BaseArcadeMachine.h"
 #include "Interacter.h"
+#include "Kismet/GameplayStatics.h"
+#include "ArcadeGameController.h"
+#include "InGameUI.h"
 
 
 // Sets default values
@@ -20,6 +26,7 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	controller = Cast<AArcadeGameController>(UGameplayStatics::GetPlayerController(this, 0));
 
 	
 }
@@ -39,8 +46,31 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
+void ABaseCharacter::InitCurrentInteractable()
+{
+	if (interacter->GetInteractable())
+	{
+		
+		ABaseArcadeMachine* arcade = Cast<ABaseArcadeMachine>(interacter->GetInteractable()->GetOwner());
+		arcade->LoadLevel((arcade->GetLevelName()));
+	}
+	
+}
+
 void ABaseCharacter::Interact()
 {
-	interacter->InitiateInteract();
+	if (interacter->GetInteractable())
+	{
+		
+		ABaseArcadeMachine* arcade = Cast<ABaseArcadeMachine>(interacter->GetInteractable()->GetOwner());
+		if (arcade)
+		{
+			onInteract.Broadcast(arcade);
+			interacter->InitiateInteract();
+		}
+	
+		
+	}
+	
 }
 

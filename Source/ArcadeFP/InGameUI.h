@@ -17,6 +17,9 @@ class ARCADEFP_API UInGameUI : public UUserWidget
 public:
 	virtual void NativeConstruct() override;
 
+	UFUNCTION()
+	void SwitchCanvas(class ABaseArcadeMachine* arcadeMachine);
+
 private:
 	UPROPERTY(meta = (BindWidget))
 	class UTextBlock* tokenCount;
@@ -24,10 +27,30 @@ private:
 	UPROPERTY(meta = (BindWidget))
 	class UImage* coinImage;
 
+	UPROPERTY(meta = (BindWidget))
+	class UCanvasPanel* inGameCanvas;
+
+	UPROPERTY(meta = (BindWidget))
+	class UCanvasPanel* whackAMoleMenuCanvas;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* startGameEasy;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidgetSwitcher* UISwitcher;
+
 	class UArcadeGameInstance* gameInstance;
+
+	class ABaseCharacter* playerCharacter;
+
+	class ABaseArcadeMachine* currentArcadeMachine;
 
 	UFUNCTION()
 	void UpdateTokenText(int newToken);
+
+	UFUNCTION()
+	void StartWAMGame();
+
 
 
 	

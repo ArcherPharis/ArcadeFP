@@ -28,6 +28,8 @@ public:
 
 	void InitiateInteract();
 
+	class UInteractableComponent* GetInteractable() { return interactable; }
+
 private:
 	
 	UFUNCTION()
@@ -38,7 +40,7 @@ private:
 
 	bool bCanInteract = false;
 
-	class UInteractableComponent* interactable;
+	UInteractableComponent* interactable;
 
 	
 };

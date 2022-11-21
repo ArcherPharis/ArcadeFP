@@ -34,6 +34,7 @@ void ABaseArcadeMachine::BeginGame(AActor* interactor)
 void ABaseArcadeMachine::LoadLevel(FName levelName)
 {
 	UGameplayStatics::OpenLevel(GetWorld(), levelName);
+	
 }
 
 // Called every frame

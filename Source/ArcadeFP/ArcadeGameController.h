@@ -18,10 +18,15 @@ public:
 	AArcadeGameController();
 
 
+	class UInGameUI* GetUI() const { return inGameUI; }
+
 	void BeginPlay() override;
 
+
 private:
-	class UInGameUI* inGameUI;
+	UInGameUI* inGameUI;
+
+	class ABaseCharacter* player;
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UInGameUI> inGameUIClass;

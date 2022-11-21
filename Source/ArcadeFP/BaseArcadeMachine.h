@@ -6,6 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "BaseArcadeMachine.generated.h"
 
+
 UCLASS()
 class ARCADEFP_API ABaseArcadeMachine : public AActor
 {
@@ -15,6 +16,7 @@ public:
 	// Sets default values for this actor's properties
 	ABaseArcadeMachine();
 
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -22,11 +24,17 @@ protected:
 	UFUNCTION()
 	virtual void BeginGame(AActor* interactor);
 
-	void LoadLevel(FName levelName);
+	
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	FORCEINLINE int GetUIIndex() const { return indexUI; }
+
+	void LoadLevel(FName levelName);
+
+	FName GetLevelName() const { return nameOfLevel; }
 
 private:
 
@@ -38,5 +46,11 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "ArcadeMachineSetup")
 	class UInteractableComponent* interactableComponent;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ArcadeMachineSetup")
+	int indexUI = 1;
+
+	UPROPERTY(EditDefaultsOnly, Category = "ArcadeMachineSetup")
+	FName nameOfLevel = "WhackAMole";
 
 };

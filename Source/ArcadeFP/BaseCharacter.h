@@ -7,6 +7,10 @@
 #include "ArcadeFPCharacter.h"
 #include "BaseCharacter.generated.h"
 
+class ABaseArcadeMachine;
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerInteract, ABaseArcadeMachine*, machine);
+
+
 UCLASS()
 class ARCADEFP_API ABaseCharacter : public AArcadeFPCharacter
 {
@@ -15,6 +19,8 @@ class ARCADEFP_API ABaseCharacter : public AArcadeFPCharacter
 public:
 	// Sets default values for this character's properties
 	ABaseCharacter();
+
+	FOnPlayerInteract onInteract;
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,9 +33,13 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void InitCurrentInteractable();
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerSetup")
 	class UInteracter* interacter;
+
+	class AArcadeGameController* controller;
 
 	void Interact();
 
