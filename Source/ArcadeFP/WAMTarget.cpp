@@ -2,6 +2,7 @@
 
 
 #include "WAMTarget.h"
+#include "WAMTargetSpawner.h"
 
 // Sets default values
 AWAMTarget::AWAMTarget()
@@ -12,6 +13,8 @@ AWAMTarget::AWAMTarget()
 	SetRootComponent(rootComp);
 	mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	mesh->SetupAttachment(rootComp);
+	mesh->SetCollisionResponseToChannels(ECR_Ignore);
+	mesh->SetCollisionResponseToChannel(ECC_GameTraceChannel2, ECR_Overlap);
 
 }
 
@@ -19,7 +22,7 @@ AWAMTarget::AWAMTarget()
 void AWAMTarget::BeginPlay()
 {
 	Super::BeginPlay();
-	mesh->OnComponentHit.AddDynamic(this, &AWAMTarget::OnHit);
+	mesh->OnComponentBeginOverlap.AddDynamic(this, &AWAMTarget::OnOverlap);
 	
 }
 
@@ -30,8 +33,15 @@ void AWAMTarget::Tick(float DeltaTime)
 
 }
 
-void AWAMTarget::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+void AWAMTarget::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOG(LogTemp, Warning, TEXT("OW! This person hit me!: %s"), *OtherActor->GetName());
+	onHitTarget.Broadcast(pointValue);
+	AWAMTargetSpawner* spawner = Cast<AWAMTargetSpawner>(GetOwner());
+	if (spawner)
+	{
+		spawner->SetOccupancy(false);
+	}
+	//todo, send event to play animation/timeline and then destroy.
+	Destroy();
 }
 

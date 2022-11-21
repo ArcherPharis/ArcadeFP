@@ -21,6 +21,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintPure, Category = "WhackAMole Character")
+		UBoxComponent* GetHammerHitBox() const { return hammerHitBox; }
+
+
 private:
 	void MoveForward(float Value);
 
@@ -31,5 +35,10 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "WhackAMole Setup")
 	UAnimMontage* attackingMontage;
+
+	UPROPERTY(EditDefaultsOnly, Category = "WhackAMole Setup")
+	class UBoxComponent* hammerHitBox;
+
+
 	
 };

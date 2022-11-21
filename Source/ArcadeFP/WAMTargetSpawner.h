@@ -25,6 +25,8 @@ public:
 
 	void SpawnTarget();
 
+	void SetOccupancy(bool isOccupied);
+
 private:
 
 	bool bIsOccupied = false;
@@ -34,6 +36,5 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "WAM Target Spawner")
 	TSubclassOf<AWAMTarget> normalEvilTarget;
 
-
-
+	class AWhackAMoleController* Controller;
 };

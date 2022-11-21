@@ -3,7 +3,8 @@
 
 #include "WAMTargetSpawner.h"
 #include "WAMTarget.h"
-
+#include "WhackAMoleController.H"
+#include "Kismet/GameplayStatics.h"
 // Sets default values
 AWAMTargetSpawner::AWAMTargetSpawner()
 {
@@ -16,7 +17,7 @@ AWAMTargetSpawner::AWAMTargetSpawner()
 void AWAMTargetSpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	Controller = Cast<AWhackAMoleController>(UGameplayStatics::GetPlayerController(this, 0));
 }
 
 // Called every frame
@@ -30,8 +31,18 @@ void AWAMTargetSpawner::SpawnTarget()
 {
 	if (!bIsOccupied)
 	{
-		GetWorld()->SpawnActor<AWAMTarget>(normalEvilTarget, GetActorLocation(), GetActorRotation());
+		auto newTarget = GetWorld()->SpawnActor<AWAMTarget>(normalEvilTarget, GetActorLocation(), GetActorRotation());
+		newTarget->SetOwner(this);
 		bIsOccupied = true;
+		if (Controller)
+		{
+			newTarget->onHitTarget.AddDynamic(Controller, &AWhackAMoleController::TargetHit);
+		}
 	}
+}
+
+void AWAMTargetSpawner::SetOccupancy(bool isOccupied)
+{
+	bIsOccupied = isOccupied;
 }
 

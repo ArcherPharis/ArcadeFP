@@ -2,10 +2,17 @@
 
 
 #include "WhackAMoleCharacter.h"
+#include "Components/BoxComponent.h"
 
 AWhackAMoleCharacter::AWhackAMoleCharacter()
 {
+	PrimaryActorTick.bCanEverTick = true;
+	hammerHitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("Hammer Hitbox"));
+	hammerHitBox->SetupAttachment(GetMesh(), "HammerSocket");
+	hammerHitBox->SetCollisionResponseToChannels(ECR_Ignore);
 	
+
+
 }
 
 void AWhackAMoleCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -48,4 +55,5 @@ void AWhackAMoleCharacter::MoveRight(float Value)
 void AWhackAMoleCharacter::Attack()
 {
 	GetMesh()->GetAnimInstance()->Montage_Play(attackingMontage);
+	
 }
