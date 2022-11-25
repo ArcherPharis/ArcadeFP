@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/GameModeBase.h"
+#include "BaseArcadeGameMode.h"
 #include "WhackAMoleGamemode.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ARCADEFP_API AWhackAMoleGamemode : public AGameModeBase
+class ARCADEFP_API AWhackAMoleGamemode : public ABaseArcadeGameMode
 {
 	GENERATED_BODY()
 	

@@ -3,3 +3,7 @@
 
 #include "ArcadeGameInstance.h"
 
+void UArcadeGameInstance::SetTokenCount(int amount)
+{
+	Tokens += amount;
+}

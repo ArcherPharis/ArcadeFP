@@ -13,5 +13,17 @@ UCLASS()
 class ARCADEFP_API ABaseArcadeGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+
+
+public:
+
+	void BeginPlay() override;
+
+	void ConvertScoreToTokens(int finalScore);
+
+private:
+
+	class UArcadeGameInstance* instance;
 	
 };

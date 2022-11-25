@@ -30,4 +30,11 @@ private:
 	UPROPERTY(EditAnywhere, Category = "Spawners")
 	TArray<class AWAMTargetSpawner*> spawners;
 
+	void SpawnLogic(int amountToSpawn);
+	void SpawnLogicNormal(int amountToSpawn);
+	void SpawnLogicHard(int amountToSpawn);
+	void EndGame();
+
+	int round = 1;
+
 };

@@ -18,6 +18,8 @@ public:
 	void BeginPlay() override;
 	UFUNCTION()
 	void TargetHit(int pointsToGiveScore);
+	void FinalScore();
+
 
 private:
 	class UBaseArcadeMachineUI* inGameUI;
@@ -26,5 +28,6 @@ private:
 	TSubclassOf<UBaseArcadeMachineUI> inGameUIClass;
 
 	int currentGameScore = 0;
+
 	
 };

@@ -23,7 +23,7 @@ void AWAMTarget::BeginPlay()
 {
 	Super::BeginPlay();
 	mesh->OnComponentBeginOverlap.AddDynamic(this, &AWAMTarget::OnOverlap);
-	
+	GetWorldTimerManager().SetTimer(despawnHandle, this, &AWAMTarget::Despawn, despawnTimer, false);
 }
 
 // Called every frame

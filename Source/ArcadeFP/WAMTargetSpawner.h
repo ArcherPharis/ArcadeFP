@@ -24,17 +24,30 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void SpawnTarget();
+	void SpawnTargetNormal();
+	void SpawnTargetHard();
+	void SpawnSuperEnemy();
 
+
+
+	UFUNCTION(BlueprintCallable, Category = "WAM Target Spawner")
 	void SetOccupancy(bool isOccupied);
+
+
 
 private:
 
 	bool bIsOccupied = false;
 	
+	UPROPERTY(EditDefaultsOnly, Category = "WAM Target Spawner")
 	TArray<TSubclassOf<class AWAMTarget>> targetClasses;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WAM Target Spawner")
-	TSubclassOf<AWAMTarget> normalEvilTarget;
+	TSubclassOf<AWAMTarget> superEvilTarget;
+
+	void SpawnEnemy(TSubclassOf<AWAMTarget> targetClass);
+
+
 
 	class AWhackAMoleController* Controller;
 };

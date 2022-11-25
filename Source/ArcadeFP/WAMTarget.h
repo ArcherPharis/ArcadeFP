@@ -27,6 +27,13 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "WAM Target Spawner")
+	void Despawn();
+
+	UFUNCTION(BlueprintCallable, Category = "MoleSetup")
+	UMeshComponent* GetMesh() const { return mesh; }
+
+
 private:
 
 	UPROPERTY(EditAnywhere, Category = "MoleSetup")
@@ -38,7 +45,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = "MoleSetup")
 	int pointValue = 10;
 
-	FTimerHandle exampleHandle;
+
+
+	UPROPERTY(EditDefaultsOnly, Category = "WAM Target Spawner")
+	float despawnTimer = 4.5f;
+
+	FTimerHandle despawnHandle;
 
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);

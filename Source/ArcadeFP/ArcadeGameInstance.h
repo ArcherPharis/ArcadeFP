@@ -20,6 +20,8 @@ class ARCADEFP_API UArcadeGameInstance : public UGameInstance
 public:
 	FORCEINLINE int GetCurrentTokenCount() const { return Tokens; }
 
+	void SetTokenCount(int amount);
+
 	FOnTokenUpdated onTokenUpdated;
 
 private:

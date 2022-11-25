@@ -3,6 +3,8 @@
 
 #include "WhackAMoleController.h"
 #include "BaseArcadeMachineUI.h"
+#include "Kismet/GameplayStatics.h"
+#include "BaseArcadeGameMode.h"
 
 void AWhackAMoleController::BeginPlay()
 {
@@ -20,3 +22,19 @@ void AWhackAMoleController::TargetHit(int pointsToGiveScore)
 	currentGameScore += pointsToGiveScore;
 	inGameUI->SetScoreText(currentGameScore);
 }
+
+void AWhackAMoleController::FinalScore()
+{
+	ABaseArcadeGameMode* gameMode = Cast<ABaseArcadeGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	if (gameMode)
+	{
+		
+		gameMode->ConvertScoreToTokens(currentGameScore);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("can't find gamemode"));
+	}
+
+}
+
