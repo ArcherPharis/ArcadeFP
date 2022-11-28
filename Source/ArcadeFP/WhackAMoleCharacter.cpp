@@ -54,6 +54,15 @@ void AWhackAMoleCharacter::MoveRight(float Value)
 
 void AWhackAMoleCharacter::Attack()
 {
-	GetMesh()->GetAnimInstance()->Montage_Play(attackingMontage);
+	if (CanAttack())
+	{
+		GetWorldTimerManager().SetTimer(firingHandle, 1 / fireRate, false);
+		GetMesh()->GetAnimInstance()->Montage_Play(attackingMontage);
+	}
 	
+}
+
+bool AWhackAMoleCharacter::CanAttack()
+{
+	return !GetWorldTimerManager().IsTimerActive(firingHandle);
 }

@@ -19,6 +19,9 @@ public:
 
 	FOnHitTarget onHitTarget;
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "MoleSetup")
+	void OnImpact();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -44,6 +47,9 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "MoleSetup")
 	int pointValue = 10;
+
+	UPROPERTY(EditAnywhere, Category = "MoleSetup")
+	UParticleSystem* explosionFX;
 
 
 

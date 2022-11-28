@@ -34,7 +34,13 @@ private:
 	class UCanvasPanel* whackAMoleMenuCanvas;
 
 	UPROPERTY(meta = (BindWidget))
+	class UCanvasPanel* cardGameMenuCanvas;
+
+	UPROPERTY(meta = (BindWidget))
 	class UButton* startGameEasy;
+
+	UPROPERTY(meta = (BindWidget))
+	class UButton* startCardGameButton;
 
 	UPROPERTY(meta = (BindWidget))
 	class UWidgetSwitcher* UISwitcher;

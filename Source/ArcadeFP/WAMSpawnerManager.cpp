@@ -103,6 +103,7 @@ void AWAMSpawnerManager::EndGame()
 	UE_LOG(LogTemp, Warning, TEXT("Endgame reached."));
 	AWhackAMoleController* controller = Cast<AWhackAMoleController>(UGameplayStatics::GetPlayerController(this, 0));
 	controller->FinalScore();
+	UGameplayStatics::OpenLevel(GetWorld(), "Arcade");
 }
 
 

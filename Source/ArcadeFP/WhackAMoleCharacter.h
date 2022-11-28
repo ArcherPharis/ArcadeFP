@@ -22,7 +22,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintPure, Category = "WhackAMole Character")
-		UBoxComponent* GetHammerHitBox() const { return hammerHitBox; }
+	UBoxComponent* GetHammerHitBox() const { return hammerHitBox; }
 
 
 private:
@@ -32,6 +32,13 @@ private:
 	void MoveRight(float Value);
 
 	void Attack();
+
+	bool CanAttack();
+
+	FTimerHandle firingHandle;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "FireRate")
+	float fireRate = 1;
 
 	UPROPERTY(EditDefaultsOnly, Category = "WhackAMole Setup")
 	UAnimMontage* attackingMontage;

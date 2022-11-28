@@ -3,6 +3,7 @@
 
 #include "WAMTarget.h"
 #include "WAMTargetSpawner.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AWAMTarget::AWAMTarget()
@@ -35,6 +36,7 @@ void AWAMTarget::Tick(float DeltaTime)
 
 void AWAMTarget::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	OnImpact();
 	onHitTarget.Broadcast(pointValue);
 	AWAMTargetSpawner* spawner = Cast<AWAMTargetSpawner>(GetOwner());
 	if (spawner)
@@ -42,6 +44,7 @@ void AWAMTarget::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 		spawner->SetOccupancy(false);
 	}
 	//todo, send event to play animation/timeline and then destroy.
+	 UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), explosionFX, GetMesh()->GetComponentLocation(), GetActorRotation(), FVector(2, 2, 2));
 	Destroy();
 }
 
