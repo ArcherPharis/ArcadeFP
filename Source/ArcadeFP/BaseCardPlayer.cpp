@@ -5,6 +5,7 @@
 #include "BaseCard.h"
 #include "CardGameMode.h"
 #include "Kismet/GameplayStatics.h"
+#include "EnemyCardPlayer.h"
 
 // Sets default values
 ABaseCardPlayer::ABaseCardPlayer()
@@ -67,7 +68,8 @@ void ABaseCardPlayer::SetGamePlayer(ABaseCardPlayer* player, bool isHuman)
 	}
 	else
 	{
-		gameMode->SetEnemy(player);
+		AEnemyCardPlayer* enemy = Cast<AEnemyCardPlayer>(player);
+		gameMode->SetEnemy(enemy);
 	}
 }
 
@@ -85,5 +87,36 @@ void ABaseCardPlayer::RemoveFromHand(ABaseCard* cardToRemove)
 	hand.Remove(cardToRemove);
 	MoveCard(cardToRemove);
 	OrganizeCards();
+}
+
+void ABaseCardPlayer::RemoveFromDeck(TSubclassOf<ABaseCard> cardClass)
+{
+	deck.RemoveSingle(cardClass);
+}
+
+void ABaseCardPlayer::ShuffleDeck()
+{
+	if (deck.Num() > 0)
+	{
+		int32 LastIndex = deck.Num() - 1;
+		for (int32 i = 0; i <= LastIndex; ++i)
+		{
+			int32 Index = FMath::RandRange(i, LastIndex);
+			if (i != Index)
+			{
+				deck.Swap(i, Index);
+			}
+		}
+	}
+}
+
+void ABaseCardPlayer::Blitz(TSubclassOf<ABaseCard> cardClass)
+{
+	ABaseCard* card = GetWorld()->SpawnActor<ABaseCard>(cardClass);
+	card->SetActorLocation(GetDeckMesh()->GetComponentLocation());
+	RemoveFromDeck(cardClass);
+	MoveCard(card);
+	
+
 }
 

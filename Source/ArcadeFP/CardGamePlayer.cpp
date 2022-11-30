@@ -6,6 +6,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "CardGameMode.h"
 #include "BaseCard.h"
+#include "CardGameMode.h"
 
 // Sets default values
 ACardGamePlayer::ACardGamePlayer()
@@ -25,6 +26,8 @@ void ACardGamePlayer::BeginPlay()
 	controller->bShowMouseCursor = true;
 	DealCards();
 	SetGamePlayer(this, true);
+	ShuffleDeck();
+	gameMode = Cast<ACardGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	
 }
 
@@ -46,19 +49,57 @@ void ACardGamePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void ACardGamePlayer::SelectItem()
 {
-	FHitResult hit;
-	FVector start;
-	FVector  dir;
-	UGameplayStatics::GetPlayerController(this, 0)->DeprojectMousePositionToWorld(start, dir);
-	FVector end = dir * mouseSelectionDistance;
-	if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility))
+	//FHitResult hit;
+	//FVector start;
+	//FVector  dir;
+	//UGameplayStatics::GetPlayerController(this, 0)->DeprojectMousePositionToWorld(start, dir);
+	//FVector end = dir * mouseSelectionDistance;
+	//if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility))
+	//{
+	//	ABaseCard* card = Cast<ABaseCard>(hit.GetActor());
+	//	if (card && card->GetOwner() == this)
+	//	{
+	//		GetCardGameMode()->SetPlayerSum(card);
+	//		RemoveFromHand(card);
+	//	}
+	//}
+
+	
+
+	if (gameMode->cardGameState == CardGameState::Blitz)
 	{
-		ABaseCard* card = Cast<ABaseCard>(hit.GetActor());
-		if (card && card->GetOwner() == this)
+		APlayerController* APC = UGameplayStatics::GetPlayerController(this, 0);
+		if (APC)
 		{
-			GetCardGameMode()->SetPlayerSum(card);
-			RemoveFromHand(card);
+			FHitResult hit;
+			if (APC->GetHitResultUnderCursor(ECC_Visibility, true, hit))
+			{
+				ABaseCard* card = Cast<ABaseCard>(hit.GetActor());
+				if (card && card->GetOwner() == this)
+				{
+					GetCardGameMode()->SetPlayerSum(card);
+					RemoveFromHand(card);
+				}
+			}
 		}
 	}
+	else if (gameMode->cardGameState == CardGameState::Skirmish)
+	{
+		APlayerController* APC = UGameplayStatics::GetPlayerController(this, 0);
+		if (APC)
+		{
+			FHitResult hit;
+			if (APC->GetHitResultUnderCursor(ECC_GameTraceChannel3, true, hit))
+			{
+				TSubclassOf<ABaseCard> cardClass = GetDeck()[0];
+				if (cardClass)
+				{
+					Blitz(cardClass);
+					gameMode->BlitzRound();
+				}
+			}
+		}
+	}
+
 }
 

@@ -7,6 +7,12 @@
 #include "EnemyCardPlayer.h"
 #include "Kismet/GameplayStatics.h"
 
+void ACardGameMode::BeginPlay()
+{
+	Super::BeginPlay();
+	
+}
+
 void ACardGameMode::SetPlayerSum(ABaseCard* card)
 {
 	totalPlayerSum += card->GetCardValue();
@@ -16,10 +22,25 @@ void ACardGameMode::SetPlayerSum(ABaseCard* card)
 void ACardGameMode::SetPlayer(ABaseCardPlayer* P)
 {
 	player = P;
+	currentTurnPlayer = player;
 }
 
-void ACardGameMode::SetEnemy(ABaseCardPlayer* E)
+void ACardGameMode::SetEnemy(AEnemyCardPlayer* E)
 {
 	enemy = E;
+}
+
+bool ACardGameMode::isPlayerInTurn(const ABaseCardPlayer* currentPlayerToCheck) const
+{
+	return currentPlayerToCheck == currentTurnPlayer;
+}
+
+void ACardGameMode::BlitzRound(int scoreFromCurrentPlayer)
+{
+	if (cardGameState == Skirmish)
+	{
+		TSubclassOf<ABaseCard> cardClass = enemy->GetDeck()[0];
+		enemy->Blitz(cardClass);
+	}
 }
 

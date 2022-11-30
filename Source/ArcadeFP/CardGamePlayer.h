@@ -37,5 +37,7 @@ private:
 
 	void SelectItem();
 
+	class ACardGameMode* gameMode;
+
 
 };

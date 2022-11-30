@@ -24,11 +24,17 @@ class ARCADEFP_API ACardGameMode : public ABaseArcadeGameMode
 public:
 	void SetPlayerSum(class ABaseCard* card);
 
-	UPROPERTY(EditDefaultsOnly, Category = "CardGameMode")
+	UPROPERTY(EditAnywhere, Category = "CardGameMode")
 	TEnumAsByte<CardGameState> cardGameState;
 
 	void SetPlayer(class ABaseCardPlayer* P);
-	void SetEnemy(class ABaseCardPlayer* E);
+	void SetEnemy(class AEnemyCardPlayer* E);
+
+	bool isPlayerInTurn(const ABaseCardPlayer* currentPlayerToCheck) const;
+
+	void BlitzRound(int scoreFromCurrentPlayer);
+
+	void BeginPlay() override;
 
 
 
@@ -44,6 +50,8 @@ private:
 	ABaseCardPlayer* player;
 
 	UPROPERTY(EditAnywhere, Category = "CardGameMode")
-	ABaseCardPlayer* enemy;
+	class AEnemyCardPlayer* enemy;
+
+	ABaseCardPlayer* currentTurnPlayer;
 	
 };

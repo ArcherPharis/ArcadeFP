@@ -15,6 +15,10 @@ public:
 	// Sets default values for this pawn's properties
 	ABaseCardPlayer();
 
+	TArray<TSubclassOf<ABaseCard>> GetDeck() { return deck; }
+
+	void Blitz(TSubclassOf<ABaseCard> cardClass);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -23,11 +27,18 @@ protected:
 
 	void RemoveFromHand(class ABaseCard* cardToRemove);
 
+	void RemoveFromDeck(TSubclassOf<ABaseCard> cardClass);
+
 	virtual void DealCards();
 
 	void SetGamePlayer(ABaseCardPlayer* player, bool isHuman);
+	void ShuffleDeck();
+
+	
 
 	TArray<ABaseCard*> GetHand() { return hand; }
+	
+
 
 public:	
 	// Called every frame
@@ -41,7 +52,12 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCardPlayer")
 	void MoveCard(ABaseCard* cardToMove);
 
+	FORCEINLINE UStaticMeshComponent* GetDeckMesh() const { return deckMesh; }
+
 private:
+
+	
+
 	UPROPERTY(EditAnywhere, Category = "BaseCardPlayer")
 	TArray<TSubclassOf<ABaseCard>> deck;
 
@@ -61,6 +77,8 @@ private:
 	float cardSpacing = 10.f;
 
 	ACardGameMode* gameMode;
+
+	
 
 	
 	

@@ -17,6 +17,8 @@ class ARCADEFP_API AEnemyCardPlayer : public ABaseCardPlayer
 public:
 	virtual void BeginPlay() override;
 
+	void EnemyBlitz();
+
 private:
 	virtual void DealCards() override;
 

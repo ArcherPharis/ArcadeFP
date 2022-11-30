@@ -9,6 +9,7 @@ void AEnemyCardPlayer::BeginPlay()
 	Super::BeginPlay();
 	DealCards();
 	SetGamePlayer(this, false);
+	ShuffleDeck();
 }
 
 void AEnemyCardPlayer::DealCards()
@@ -19,4 +20,11 @@ void AEnemyCardPlayer::DealCards()
 	{
 		card->SetActorRotation(FRotator(180, 0, 0));
 	}
+}
+
+void AEnemyCardPlayer::EnemyBlitz()
+{
+
+	TSubclassOf<ABaseCard> cardClass = GetDeck()[0];
+	ABaseCard* card = GetWorld()->SpawnActor<ABaseCard>(cardClass);
 }
