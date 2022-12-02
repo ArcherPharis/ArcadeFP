@@ -110,12 +110,13 @@ void ABaseCardPlayer::ShuffleDeck()
 	}
 }
 
-void ABaseCardPlayer::Blitz(TSubclassOf<ABaseCard> cardClass)
+void ABaseCardPlayer::Skirmish(TSubclassOf<ABaseCard> cardClass, ABaseCard*& spawnedCard)
 {
 	ABaseCard* card = GetWorld()->SpawnActor<ABaseCard>(cardClass);
 	card->SetActorLocation(GetDeckMesh()->GetComponentLocation());
 	RemoveFromDeck(cardClass);
 	MoveCard(card);
+	spawnedCard = card;
 	
 
 }

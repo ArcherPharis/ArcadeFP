@@ -17,7 +17,10 @@ public:
 
 	TArray<TSubclassOf<ABaseCard>> GetDeck() { return deck; }
 
-	void Blitz(TSubclassOf<ABaseCard> cardClass);
+	void Skirmish(TSubclassOf<ABaseCard> cardClass, ABaseCard*& spawnedCard);
+	TArray<ABaseCard*> GetHand() { return hand; }
+
+	void RemoveFromHand(class ABaseCard* cardToRemove);
 
 protected:
 	// Called when the game starts or when spawned
@@ -25,7 +28,7 @@ protected:
 
 	void OrganizeCards();
 
-	void RemoveFromHand(class ABaseCard* cardToRemove);
+	
 
 	void RemoveFromDeck(TSubclassOf<ABaseCard> cardClass);
 
@@ -36,7 +39,7 @@ protected:
 
 	
 
-	TArray<ABaseCard*> GetHand() { return hand; }
+	
 	
 
 

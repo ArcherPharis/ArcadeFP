@@ -24,6 +24,8 @@ class ARCADEFP_API ACardGameMode : public ABaseArcadeGameMode
 public:
 	void SetPlayerSum(class ABaseCard* card);
 
+	
+
 	UPROPERTY(EditAnywhere, Category = "CardGameMode")
 	TEnumAsByte<CardGameState> cardGameState;
 
@@ -32,13 +34,18 @@ public:
 
 	bool isPlayerInTurn(const ABaseCardPlayer* currentPlayerToCheck) const;
 
-	void BlitzRound(int scoreFromCurrentPlayer);
+	void SkirmishRound(int scoreFromCurrentPlayer, ABaseCardPlayer* playerWhoWent);
+	void BlitzRound(int scoreFromCurrentPlayer, ABaseCardPlayer* playerWhoWent);
 
 	void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
 
 
 
 private:
+
+
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Score")
 	int totalPlayerSum = 0;
@@ -53,5 +60,16 @@ private:
 	class AEnemyCardPlayer* enemy;
 
 	ABaseCardPlayer* currentTurnPlayer;
+	
+	FTimerHandle enemyTurnDelayHandle;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "EnemyParameters")
+	float enemyTurnDelay = 1.5f;
+
+	void EnemySkirmish();
+
+	void CheckSkirmishValues();
+
+	void FindLowestPossibleCard();
 	
 };

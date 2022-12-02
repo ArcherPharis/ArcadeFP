@@ -75,10 +75,13 @@ void ACardGamePlayer::SelectItem()
 			if (APC->GetHitResultUnderCursor(ECC_Visibility, true, hit))
 			{
 				ABaseCard* card = Cast<ABaseCard>(hit.GetActor());
-				if (card && card->GetOwner() == this)
+				if (card)
 				{
-					GetCardGameMode()->SetPlayerSum(card);
-					RemoveFromHand(card);
+					if (card->GetOwner() == this && gameMode->isPlayerInTurn(this))
+					{
+						GetCardGameMode()->BlitzRound(card->GetCardValue(), this);
+						RemoveFromHand(card);
+					}
 				}
 			}
 		}
@@ -92,10 +95,11 @@ void ACardGamePlayer::SelectItem()
 			if (APC->GetHitResultUnderCursor(ECC_GameTraceChannel3, true, hit))
 			{
 				TSubclassOf<ABaseCard> cardClass = GetDeck()[0];
-				if (cardClass)
+				if (cardClass && gameMode->isPlayerInTurn(this))
 				{
-					Blitz(cardClass);
-					gameMode->BlitzRound();
+					ABaseCard* card;
+					Skirmish(cardClass, card);
+					gameMode->SkirmishRound(card->GetCardValue(), this);
 				}
 			}
 		}
