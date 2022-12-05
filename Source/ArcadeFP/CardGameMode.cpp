@@ -11,11 +11,27 @@ void ACardGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	
 }
 
 void ACardGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ACardGameMode::HandleTieSkirmish()
+{
+	totalEnemySum = 0;
+	totalPlayerSum = 0;
+	cardGameState = Skirmish;
+	currentTurnPlayer = player;
+	BroadcastBothScores();
+}
+
+void ACardGameMode::BroadcastBothScores()
+{
+	onEnemyScored.Broadcast(totalEnemySum);
+	onPlayerScored.Broadcast(totalPlayerSum);
 }
 
 void ACardGameMode::EnemySkirmish()
@@ -24,6 +40,7 @@ void ACardGameMode::EnemySkirmish()
 	ABaseCard* card;
 	enemy->Skirmish(cardClass, card);
 	totalEnemySum += card->GetCardValue();
+	onEnemyScored.Broadcast(totalEnemySum);
 	SkirmishRound(card->GetCardValue(), enemy);
 	
 }
@@ -34,22 +51,32 @@ void ACardGameMode::CheckSkirmishValues()
 	{
 		currentTurnPlayer = player;
 		cardGameState = Blitz;
+		onPhaseChange.Broadcast("Blitz");
 	}
-	else
+	else if (totalPlayerSum > totalEnemySum)
 	{
-		currentTurnPlayer = enemy;
 		cardGameState = Blitz;
+		onPhaseChange.Broadcast("Blitz");
+		BlitzRound(totalEnemySum, enemy);
 	}
 
 	if (totalPlayerSum == totalEnemySum)
 	{
-		currentTurnPlayer = player;
+		
+		
+		player->ClearDeck();
+		enemy->ClearDeck();
+		//todo, after a tie, if enemy is lower, we need to set their turn. Probably that check.
+
+		
 	}
 }
 
 void ACardGameMode::FindLowestPossibleCard()
 {
 	TArray<ABaseCard*> possibleCards;
+
+	if (enemy->GetHand().Num() == 0) return;
 	
 	for (int i = 0; i < enemy->GetHand().Num(); i++)
 	{
@@ -72,7 +99,6 @@ void ACardGameMode::FindLowestPossibleCard()
 				{
 					if (lowestCard != nullptr && lowestCard->GetCardValue() <= possibleCards[i]->GetCardValue())
 						break;
-					UE_LOG(LogTemp, Warning, TEXT("Checking for lowest card"));
 					lowestCard = possibleCards[i];
 
 				}
@@ -86,8 +112,15 @@ void ACardGameMode::FindLowestPossibleCard()
 		UE_LOG(LogTemp, Warning, TEXT("No possible cards to play. I'll try to play my highest."));
 	}
 
-	enemy->RemoveFromHand(lowestCard);
-	lowestCard->SetActorRotation(FRotator(180, lowestCard->GetActorRotation().Yaw, lowestCard->GetActorRotation().Roll));
+	if (lowestCard)
+	{
+
+		enemy->RemoveFromHand(lowestCard);
+		totalEnemySum += lowestCard->GetCardValue();
+		onEnemyScored.Broadcast(totalEnemySum);
+		lowestCard->SetActorRotation(FRotator(180, lowestCard->GetActorRotation().Yaw, lowestCard->GetActorRotation().Roll));
+		currentTurnPlayer = player;
+	}
 
 	// It would store these in an array. By the way, special cards will always get stored.
 //called possible choices, then it will go through this array, and sort them from lowest to
@@ -126,6 +159,13 @@ bool ACardGameMode::isPlayerInTurn(const ABaseCardPlayer* currentPlayerToCheck) 
 	return currentPlayerToCheck == currentTurnPlayer;
 }
 
+//todo, there needs to be some RoundStartCheck function, that is placed in front of everything in both
+//skirmish and blitz. It's going to check if either player's hand is zero, based on who played the card
+//will end the game based on the next player's move. Which will check final scores after the final
+//move. For Skirmish, if the hand is ever zero in either hand, it will just check the sums and determine
+//a winner. Also if the deck is ever zero at the start of skirmish, you can use your hand instead.
+//you still having deck cards means nothing in blitz, but having hand cards in skirmish can save you.
+
 void ACardGameMode::SkirmishRound(int scoreFromCurrentPlayer, ABaseCardPlayer* playerWhoWent)
 {
 	if (cardGameState == Skirmish)
@@ -133,28 +173,25 @@ void ACardGameMode::SkirmishRound(int scoreFromCurrentPlayer, ABaseCardPlayer* p
 
 		if (playerWhoWent == player && currentTurnPlayer == player)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Player Went"));
 			totalPlayerSum += scoreFromCurrentPlayer;
+			onPlayerScored.Broadcast(totalPlayerSum);
 			currentTurnPlayer = enemy;
-			//so now we check if the enemy even has a score. If they do, we have to
-			//determine if its higher than the player, lower, or tied.
 			if (totalEnemySum == 0)
 			{
-				//enemy goes always in this case. but then we run the same check, to
-				//see if lower, higher, or tied.
 				GetWorldTimerManager().SetTimer(enemyTurnDelayHandle, this, &ACardGameMode::EnemySkirmish, enemyTurnDelay, false);
 		
+			}
+			else
+			{
+				CheckSkirmishValues();
 			}
 			
 		}
 
 		if (playerWhoWent == enemy)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("We got here"));
 			CheckSkirmishValues();
 		}
-		//TSubclassOf<ABaseCard> cardClass = enemy->GetDeck()[0];
-		//enemy->Blitz(cardClass);
 	}
 }
 
@@ -165,13 +202,41 @@ void ACardGameMode::BlitzRound(int scoreFromCurrentPlayer, ABaseCardPlayer* play
 		if (playerWhoWent == player && currentTurnPlayer == player)
 		{
 			totalPlayerSum += scoreFromCurrentPlayer;
+			onPlayerScored.Broadcast(totalPlayerSum);
 			currentTurnPlayer = enemy;
 
 			if (totalPlayerSum > totalEnemySum)
 			{
+				if (enemy->GetHand().Num() == 0)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Enemy loses here."));
+					return;
+				}
+
+
+
 				GetWorldTimerManager().SetTimer(enemyTurnDelayHandle, this, &ACardGameMode::FindLowestPossibleCard, enemyTurnDelay, false);
 
+
 			}
+			else if(totalEnemySum < totalEnemySum)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("You lose screen here."));
+			}
+
+			if (totalPlayerSum == totalEnemySum)
+			{
+				player->ClearDeck();
+				enemy->ClearDeck();
+				cardGameState = Skirmish;
+				onPhaseChange.Broadcast("Skirmish");
+				
+			}
+		}
+
+		if (playerWhoWent == enemy && currentTurnPlayer == enemy)
+		{
+			GetWorldTimerManager().SetTimer(enemyTurnDelayHandle, this, &ACardGameMode::FindLowestPossibleCard, enemyTurnDelay, false);
 		}
 	}
 }

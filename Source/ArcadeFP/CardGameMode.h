@@ -6,6 +6,11 @@
 #include "BaseArcadeGameMode.h"
 #include "CardGameMode.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEnemyScored, int, newScore);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerScored, int, newScore);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPhaseChange, FString, newPhase);
+
+
 UENUM()
 enum CardGameState
 {
@@ -24,7 +29,9 @@ class ARCADEFP_API ACardGameMode : public ABaseArcadeGameMode
 public:
 	void SetPlayerSum(class ABaseCard* card);
 
-	
+	FOnEnemyScored onEnemyScored;
+	FOnPlayerScored onPlayerScored;
+	FOnPhaseChange onPhaseChange;
 
 	UPROPERTY(EditAnywhere, Category = "CardGameMode")
 	TEnumAsByte<CardGameState> cardGameState;
@@ -40,6 +47,11 @@ public:
 	void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
+
+	UFUNCTION(BlueprintCallable, Category = "CardGameGameMode")
+	void HandleTieSkirmish();
+
+	
 
 
 
@@ -59,6 +71,7 @@ private:
 	UPROPERTY(EditAnywhere, Category = "CardGameMode")
 	class AEnemyCardPlayer* enemy;
 
+	UPROPERTY(EditAnywhere, Category = "CardGameMode")
 	ABaseCardPlayer* currentTurnPlayer;
 	
 	FTimerHandle enemyTurnDelayHandle;
@@ -71,5 +84,8 @@ private:
 	void CheckSkirmishValues();
 
 	void FindLowestPossibleCard();
+	void BroadcastBothScores();
+
+	
 	
 };

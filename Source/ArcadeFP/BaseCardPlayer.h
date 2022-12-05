@@ -50,10 +50,14 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	UFUNCTION(BlueprintCallable, Category = "BaseCardPlayer")
 	class ACardGameMode* GetCardGameMode() const { return gameMode; }
 
 	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCardPlayer")
 	void MoveCard(ABaseCard* cardToMove);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCardPlayer")
+	void ClearDeck();
 
 	FORCEINLINE UStaticMeshComponent* GetDeckMesh() const { return deckMesh; }
 

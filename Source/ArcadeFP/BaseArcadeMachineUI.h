@@ -18,8 +18,13 @@ public:
 
 	void SetScoreText(int newScore);
 
+	
+
+protected:
+	class UTextBlock* GetScoreText() const { return scoreText; }
+
 private:
 	UPROPERTY(meta = (BindWidget))
-	class UTextBlock* scoreText;
+	UTextBlock* scoreText;
 	
 };
