@@ -7,6 +7,11 @@
 #include "EnemyCardPlayer.h"
 #include "Kismet/GameplayStatics.h"
 
+ACardGameMode::ACardGameMode()
+{
+	PrimaryActorTick.bCanEverTick = true;
+}
+
 void ACardGameMode::BeginPlay()
 {
 	Super::BeginPlay();
@@ -17,6 +22,8 @@ void ACardGameMode::BeginPlay()
 void ACardGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	//UE_LOG(LogTemp, Warning, TEXT("%i"), oldPlayerSum);
+	
 }
 
 void ACardGameMode::HandleTieSkirmish()
@@ -39,6 +46,7 @@ void ACardGameMode::EnemySkirmish()
 	TSubclassOf<ABaseCard> cardClass = enemy->GetDeck()[0];
 	ABaseCard* card;
 	enemy->Skirmish(cardClass, card);
+	oldEnemySum = totalEnemySum;
 	totalEnemySum += card->GetCardValue();
 	onEnemyScored.Broadcast(totalEnemySum);
 	SkirmishRound(card->GetCardValue(), enemy);
@@ -49,31 +57,64 @@ void ACardGameMode::CheckSkirmishValues()
 {
 	if (totalPlayerSum < totalEnemySum)
 	{
+		if (player->GetHand().Num() == 0)
+		{
+			GameOver();
+			return;
+		}
+
+
 		currentTurnPlayer = player;
 		cardGameState = Blitz;
 		onPhaseChange.Broadcast("Blitz");
 	}
 	else if (totalPlayerSum > totalEnemySum)
 	{
+		if (enemy->GetHand().Num() == 0)
+		{
+			PlayerWon();
+			return;
+		}
+
 		cardGameState = Blitz;
 		onPhaseChange.Broadcast("Blitz");
 		BlitzRound(totalEnemySum, enemy);
 	}
 
 	if (totalPlayerSum == totalEnemySum)
-	{
-		
-		
+	{	
 		player->ClearDeck();
 		enemy->ClearDeck();
-		//todo, after a tie, if enemy is lower, we need to set their turn. Probably that check.
-
-		
 	}
 }
 
 void ACardGameMode::FindLowestPossibleCard()
 {
+
+	if (enemy->GetCurrentCard() && enemy->GetCurrentCard()->isBolted)
+	{
+		ABaseCard* resCard = nullptr;
+		for (ABaseCard* sCard : enemy->GetHand())
+		{
+			if (sCard->GetCardValue() == 1 && resCard == nullptr)
+			{
+				resCard = sCard;
+			}
+			if (resCard)
+			{
+				resCard->UseSpecialEffect();
+				enemy->RemoveFromHand(resCard);
+				oldEnemySum = totalEnemySum;
+				totalEnemySum += resCard->GetCardValue() + enemy->GetCurrentCard()->GetCardValue();
+				onEnemyScored.Broadcast(totalEnemySum);
+				resCard->SetActorRotation(FRotator(180, resCard->GetActorRotation().Yaw, resCard->GetActorRotation().Roll));
+				currentTurnPlayer = player;
+				return;
+			}
+		}
+	}
+
+
 	TArray<ABaseCard*> possibleCards;
 
 	if (enemy->GetHand().Num() == 0) return;
@@ -86,9 +127,10 @@ void ACardGameMode::FindLowestPossibleCard()
 			possibleCards.Add(enemy->GetHand()[i]);
 		}
 	}
-	ABaseCard* lowestCard = possibleCards[0];
+	
 	if (possibleCards.Num() > 0)
 	{
+		ABaseCard* lowestCard = possibleCards[0];
 		int highestPossibleScore = 7;
 
 		for (int i = 0; i < possibleCards.Num(); i++)
@@ -106,33 +148,48 @@ void ACardGameMode::FindLowestPossibleCard()
 			}
 
 		}
+		if (lowestCard)
+		{
+
+			enemy->RemoveFromHand(lowestCard);
+			oldEnemySum = totalEnemySum;
+			totalEnemySum += lowestCard->GetCardValue();
+			onEnemyScored.Broadcast(totalEnemySum);
+			lowestCard->SetActorRotation(FRotator(180, lowestCard->GetActorRotation().Yaw, lowestCard->GetActorRotation().Roll));
+			currentTurnPlayer = player;
+		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("No possible cards to play. I'll try to play my highest."));
+		ABaseCard* specialCard = nullptr;
+
+		for (ABaseCard* sCard : enemy->GetHand())
+		{
+			if (sCard->GetCardValue() == 0 && specialCard == nullptr)
+			{
+				specialCard = sCard;
+			}
+		}
+
+		if (specialCard)
+		{
+			specialCard->UseSpecialEffect();
+			enemy->RemoveFromHand(specialCard);
+			oldEnemySum = totalEnemySum;
+			totalEnemySum += specialCard->GetCardValue();
+			onEnemyScored.Broadcast(totalEnemySum);
+			specialCard->SetActorRotation(FRotator(180, specialCard->GetActorRotation().Yaw, specialCard->GetActorRotation().Roll));
+			currentTurnPlayer = player;
+		}
+		else
+		{
+			PlayerWon();
+		}
 	}
 
-	if (lowestCard)
-	{
-
-		enemy->RemoveFromHand(lowestCard);
-		totalEnemySum += lowestCard->GetCardValue();
-		onEnemyScored.Broadcast(totalEnemySum);
-		lowestCard->SetActorRotation(FRotator(180, lowestCard->GetActorRotation().Yaw, lowestCard->GetActorRotation().Roll));
-		currentTurnPlayer = player;
-	}
-
-	// It would store these in an array. By the way, special cards will always get stored.
-//called possible choices, then it will go through this array, and sort them from lowest to
-//greatest, it will then pick the first index to play. If its array size is 0 after it tries
-//to find a card that would put it above your value, it will forfeit the game. Later on,
-//before ALL of this, we will check if the there is a special card in the deck, and if there is
-//roll a dice to decide whether or not to play it. In the case where it cannot find a greater card
-//but it does have a special card, it will play the special card.
-
-//also, if it does not have a card that will beat our sum, still have it find the largest possible
-//card it can have and play that one, to at least try to tie.
 }
+
+
 
 
 
@@ -141,6 +198,148 @@ void ACardGameMode::SetPlayerSum(ABaseCard* card)
 {
 	totalPlayerSum += card->GetCardValue();
 	UE_LOG(LogTemp, Warning, TEXT("%i"), totalPlayerSum)
+}
+
+int ACardGameMode::GetEitherPlayerSum()
+{
+	if (currentTurnPlayer == player)
+	{
+		return totalPlayerSum;
+	}
+	else if (currentTurnPlayer == enemy)
+	{
+		return totalEnemySum;
+	}
+
+
+	return 0;
+}
+
+void ACardGameMode::DoubleSum(ABaseCardPlayer* playerWhoFlared)
+{
+	if (playerWhoFlared == player)
+	{
+		oldPlayerSum = totalPlayerSum;
+		totalPlayerSum *= 2;
+		onPlayerScored.Broadcast(totalPlayerSum);
+	}
+	if (playerWhoFlared == enemy)
+	{
+		oldEnemySum = totalEnemySum;
+		totalEnemySum *= 2;
+		onEnemyScored.Broadcast(totalEnemySum);
+	}
+}
+
+void ACardGameMode::ResurrectCard(ABaseCardPlayer* playerWhoResurrected, ABaseCard* card)
+{
+	//cant test yet, enemy has to be to use other cards first, specifically bolt to know when 
+	//to change its current card. let's do ressurect last.
+
+	if (playerWhoResurrected == player)
+	{
+		if (player->GetCurrentCard()->isBolted)
+		{
+			player->GetCurrentCard()->SetActorRotation((FRotator(180, player->GetCurrentCard()->GetActorRotation().Yaw, player ->GetCurrentCard()->GetActorRotation().Roll)));
+			player->GetCurrentCard()->isBolted = false;
+			totalPlayerSum += oldPlayerSum;
+			oldPlayerSum = totalPlayerSum - player->GetCurrentCard()->GetCardValue();
+			onPlayerScored.Broadcast(totalPlayerSum);
+		}
+		else
+		{
+			player->RemoveFromHand(card);
+			oldPlayerSum = totalPlayerSum;
+			totalPlayerSum += card->GetCardValue() - 1;
+			onPlayerScored.Broadcast(totalPlayerSum);
+		}
+	}
+
+
+	if (playerWhoResurrected == enemy)
+	{
+		if (enemy->GetCurrentCard()->isBolted)
+		{
+			enemy->GetCurrentCard()->SetActorRotation((FRotator(-180, enemy->GetCurrentCard()->GetActorRotation().Yaw, enemy->GetCurrentCard()->GetActorRotation().Roll)));
+			enemy->GetCurrentCard()->isBolted = false;
+			totalEnemySum += oldEnemySum;
+			oldEnemySum = totalEnemySum - enemy->GetCurrentCard()->GetCardValue();
+			onEnemyScored.Broadcast(totalEnemySum);
+		}
+		else
+		{
+			enemy->RemoveFromHand(card);
+			oldEnemySum = totalEnemySum;
+			totalEnemySum += card->GetCardValue() - 1;
+			onEnemyScored.Broadcast(totalEnemySum);
+		}
+	}
+
+}
+
+void ACardGameMode::Flip(ABaseCardPlayer* playerWhoFlipped)
+{
+	if (playerWhoFlipped == player)
+	{
+		int v = totalPlayerSum;
+		int y = oldPlayerSum;
+		totalPlayerSum = totalEnemySum;
+		totalEnemySum = v;
+		oldPlayerSum = oldEnemySum;
+		oldEnemySum = y;
+		onEnemyScored.Broadcast(totalEnemySum);
+	}
+
+	if (playerWhoFlipped == enemy)
+	{
+		int v = totalEnemySum;
+		int y = oldPlayerSum;
+		totalEnemySum = totalPlayerSum;
+		totalPlayerSum = v;
+		oldPlayerSum = oldEnemySum;
+		oldEnemySum = y;
+		onEnemyScored.Broadcast(totalEnemySum);
+		onPlayerScored.Broadcast(totalPlayerSum);
+
+	}
+}
+
+void ACardGameMode::GameOver()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player Lost"));
+}
+
+void ACardGameMode::PlayerWon()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Player Won"));
+
+}
+
+void ACardGameMode::PreCheck()
+{
+	if (enemy->GetHand().Num() == 0 && totalEnemySum < totalPlayerSum)
+	{
+		PlayerWon();
+		return;
+	}
+
+	if (player->GetHand().Num() == 0 && totalPlayerSum < totalEnemySum)
+	{
+		GameOver();
+		return;
+	}
+
+	if (totalEnemySum == totalPlayerSum)
+	{
+		cardGameState == Skirmish;
+		currentTurnPlayer = player;
+	}
+
+}
+
+void ACardGameMode::SetOldPlayerAmount()
+{
+	oldPlayerSum = totalPlayerSum;
 }
 
 void ACardGameMode::SetPlayer(ABaseCardPlayer* P)
@@ -154,25 +353,45 @@ void ACardGameMode::SetEnemy(AEnemyCardPlayer* E)
 	enemy = E;
 }
 
+void ACardGameMode::BoltSum(ABaseCardPlayer* playerWhoBolted)
+{
+	if (playerWhoBolted == player)
+	{
+		enemy->GetCurrentCard()->SetActorRotation((FRotator(-180, enemy->GetCurrentCard()->GetActorRotation().Yaw, enemy->GetCurrentCard()->GetActorRotation().Roll)));
+		enemy->GetCurrentCard()->isBolted = true;
+		
+		totalEnemySum = oldEnemySum;
+		onEnemyScored.Broadcast(totalEnemySum);
+	}
+	if (playerWhoBolted == enemy)
+	{
+		player->GetCurrentCard()->SetActorRotation((FRotator(-180, player->GetCurrentCard()->GetActorRotation().Yaw, player->GetCurrentCard()->GetActorRotation().Roll)));
+		player->GetCurrentCard()->isBolted = true;
+		totalPlayerSum = oldPlayerSum;
+		onPlayerScored.Broadcast(totalPlayerSum);
+	}
+}
+
 bool ACardGameMode::isPlayerInTurn(const ABaseCardPlayer* currentPlayerToCheck) const
 {
 	return currentPlayerToCheck == currentTurnPlayer;
 }
 
-//todo, there needs to be some RoundStartCheck function, that is placed in front of everything in both
-//skirmish and blitz. It's going to check if either player's hand is zero, based on who played the card
-//will end the game based on the next player's move. Which will check final scores after the final
-//move. For Skirmish, if the hand is ever zero in either hand, it will just check the sums and determine
-//a winner. Also if the deck is ever zero at the start of skirmish, you can use your hand instead.
-//you still having deck cards means nothing in blitz, but having hand cards in skirmish can save you.
 
 void ACardGameMode::SkirmishRound(int scoreFromCurrentPlayer, ABaseCardPlayer* playerWhoWent)
 {
+	PreCheck();
 	if (cardGameState == Skirmish)
 	{
 
 		if (playerWhoWent == player && currentTurnPlayer == player)
 		{
+			oldPlayerSum = totalPlayerSum;
+			if (scoreFromCurrentPlayer == 0)
+			{
+				totalPlayerSum += 1;
+			}
+			
 			totalPlayerSum += scoreFromCurrentPlayer;
 			onPlayerScored.Broadcast(totalPlayerSum);
 			currentTurnPlayer = enemy;
@@ -190,6 +409,12 @@ void ACardGameMode::SkirmishRound(int scoreFromCurrentPlayer, ABaseCardPlayer* p
 
 		if (playerWhoWent == enemy)
 		{
+
+			if (scoreFromCurrentPlayer == 0)
+			{
+				totalEnemySum += 1;
+			}
+			onEnemyScored.Broadcast(totalEnemySum);
 			CheckSkirmishValues();
 		}
 	}
@@ -197,11 +422,14 @@ void ACardGameMode::SkirmishRound(int scoreFromCurrentPlayer, ABaseCardPlayer* p
 
 void ACardGameMode::BlitzRound(int scoreFromCurrentPlayer, ABaseCardPlayer* playerWhoWent)
 {
+	PreCheck();
+
 	if (cardGameState == Blitz)
 	{
 		if (playerWhoWent == player && currentTurnPlayer == player)
 		{
 			totalPlayerSum += scoreFromCurrentPlayer;
+		
 			onPlayerScored.Broadcast(totalPlayerSum);
 			currentTurnPlayer = enemy;
 
@@ -209,7 +437,7 @@ void ACardGameMode::BlitzRound(int scoreFromCurrentPlayer, ABaseCardPlayer* play
 			{
 				if (enemy->GetHand().Num() == 0)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Enemy loses here."));
+					PlayerWon();
 					return;
 				}
 
@@ -219,9 +447,10 @@ void ACardGameMode::BlitzRound(int scoreFromCurrentPlayer, ABaseCardPlayer* play
 
 
 			}
-			else if(totalEnemySum < totalEnemySum)
+			else if (totalPlayerSum < totalEnemySum)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("You lose screen here."));
+				GameOver();
+				return;
 			}
 
 			if (totalPlayerSum == totalEnemySum)

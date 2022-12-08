@@ -27,7 +27,25 @@ class ARCADEFP_API ACardGameMode : public ABaseArcadeGameMode
 	GENERATED_BODY()
 
 public:
+	ACardGameMode();
+
 	void SetPlayerSum(class ABaseCard* card);
+
+	int GetEitherPlayerSum();
+
+	void DoubleSum(class ABaseCardPlayer* playerWhoFlared);
+
+	void ResurrectCard(ABaseCardPlayer* playerWhoResurrected, ABaseCard* card);
+	void Flip(ABaseCardPlayer* playerWhoFlipped);
+
+	void SetOldPlayerAmount();
+
+	void GameOver();
+	void PlayerWon();
+
+	void PreCheck();
+
+	
 
 	FOnEnemyScored onEnemyScored;
 	FOnPlayerScored onPlayerScored;
@@ -36,8 +54,10 @@ public:
 	UPROPERTY(EditAnywhere, Category = "CardGameMode")
 	TEnumAsByte<CardGameState> cardGameState;
 
-	void SetPlayer(class ABaseCardPlayer* P);
+	void SetPlayer(ABaseCardPlayer* P);
 	void SetEnemy(class AEnemyCardPlayer* E);
+
+	void BoltSum(ABaseCardPlayer* playerWhoBolted);
 
 	bool isPlayerInTurn(const ABaseCardPlayer* currentPlayerToCheck) const;
 
@@ -57,13 +77,17 @@ public:
 
 private:
 
-
+	
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Score")
 	int totalPlayerSum = 0;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Score")
 	int totalEnemySum = 0;
+
+	int oldPlayerSum;
+	int oldEnemySum;
+
 
 	UPROPERTY(EditAnywhere, Category = "CardGameMode")
 	ABaseCardPlayer* player;

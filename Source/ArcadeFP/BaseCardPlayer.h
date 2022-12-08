@@ -53,6 +53,8 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "BaseCardPlayer")
 	class ACardGameMode* GetCardGameMode() const { return gameMode; }
 
+	ABaseCard* GetCurrentCard() { return currentlyPlayedCard; }
+
 	UFUNCTION(BlueprintImplementableEvent, Category = "BaseCardPlayer")
 	void MoveCard(ABaseCard* cardToMove);
 
@@ -63,7 +65,7 @@ public:
 
 private:
 
-	
+	ABaseCard* currentlyPlayedCard;
 
 	UPROPERTY(EditAnywhere, Category = "BaseCardPlayer")
 	TArray<TSubclassOf<ABaseCard>> deck;

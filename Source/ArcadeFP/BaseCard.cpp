@@ -2,6 +2,8 @@
 
 
 #include "BaseCard.h"
+#include "BaseCardPlayer.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseCard::ABaseCard()
@@ -27,5 +29,13 @@ void ABaseCard::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+void ABaseCard::UseSpecialEffect()
+{
+	if (specialEffectFX)
+	{
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), specialEffectFX, GetActorLocation(), GetActorRotation());
+	}
 }
 

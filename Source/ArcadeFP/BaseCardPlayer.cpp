@@ -85,7 +85,11 @@ void ABaseCardPlayer::OrganizeCards()
 void ABaseCardPlayer::RemoveFromHand(ABaseCard* cardToRemove)
 {
 	hand.Remove(cardToRemove);
-	MoveCard(cardToRemove);
+	if (cardToRemove->stackableCard)
+	{
+		MoveCard(cardToRemove);
+		currentlyPlayedCard = cardToRemove;
+	}
 	OrganizeCards();
 }
 
@@ -116,6 +120,7 @@ void ABaseCardPlayer::Skirmish(TSubclassOf<ABaseCard> cardClass, ABaseCard*& spa
 	card->SetActorLocation(GetDeckMesh()->GetComponentLocation());
 	RemoveFromDeck(cardClass);
 	MoveCard(card);
+	currentlyPlayedCard = card;
 	spawnedCard = card;
 	
 

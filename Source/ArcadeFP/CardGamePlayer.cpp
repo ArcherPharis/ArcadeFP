@@ -49,23 +49,7 @@ void ACardGamePlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void ACardGamePlayer::SelectItem()
 {
-	//FHitResult hit;
-	//FVector start;
-	//FVector  dir;
-	//UGameplayStatics::GetPlayerController(this, 0)->DeprojectMousePositionToWorld(start, dir);
-	//FVector end = dir * mouseSelectionDistance;
-	//if (GetWorld()->LineTraceSingleByChannel(hit, start, end, ECC_Visibility))
-	//{
-	//	ABaseCard* card = Cast<ABaseCard>(hit.GetActor());
-	//	if (card && card->GetOwner() == this)
-	//	{
-	//		GetCardGameMode()->SetPlayerSum(card);
-	//		RemoveFromHand(card);
-	//	}
-	//}
-
 	
-
 	if (gameMode->cardGameState == CardGameState::Blitz)
 	{
 		APlayerController* APC = UGameplayStatics::GetPlayerController(this, 0);
@@ -79,6 +63,8 @@ void ACardGamePlayer::SelectItem()
 				{
 					if (card->GetOwner() == this && gameMode->isPlayerInTurn(this))
 					{
+						gameMode->SetOldPlayerAmount();
+						card->UseSpecialEffect();
 						GetCardGameMode()->BlitzRound(card->GetCardValue(), this);
 						RemoveFromHand(card);
 					}

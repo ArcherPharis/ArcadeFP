@@ -17,7 +17,12 @@ public:
 
 	int GetCardValue() const { return cardValue; }
 
+	UFUNCTION(BlueprintCallable, Category = "Card")
 	UStaticMeshComponent* GetMesh() const { return mesh; }
+	UPROPERTY(EditDefaultsOnly, Category = "Card")
+	bool stackableCard = true;
+	UPROPERTY(EditDefaultsOnly, Category = "Card")
+	bool isBolted = false;
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,6 +32,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	virtual void UseSpecialEffect();
+
 private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Card")
@@ -34,6 +41,9 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Card")
 	UStaticMeshComponent* mesh;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Card")
+	UParticleSystem* specialEffectFX;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Card")
 	int cardValue;
