@@ -30,6 +30,8 @@ public:
 
 	class UInteractableComponent* GetInteractable() { return interactable; }
 
+
+
 private:
 	
 	UFUNCTION()

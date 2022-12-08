@@ -35,7 +35,8 @@ void ABaseCard::UseSpecialEffect()
 {
 	if (specialEffectFX)
 	{
-		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), specialEffectFX, GetActorLocation(), GetActorRotation());
+		FRotator rot = FRotator(FMath::Abs(GetActorRotation().Pitch), GetActorRotation().Yaw, GetActorRotation().Roll);
+		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), specialEffectFX, GetActorLocation(), rot);
 	}
 }
 

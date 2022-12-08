@@ -362,6 +362,7 @@ void ACardGameMode::BoltSum(ABaseCardPlayer* playerWhoBolted)
 		
 		totalEnemySum = oldEnemySum;
 		onEnemyScored.Broadcast(totalEnemySum);
+		PreCheck();
 	}
 	if (playerWhoBolted == enemy)
 	{
@@ -369,6 +370,7 @@ void ACardGameMode::BoltSum(ABaseCardPlayer* playerWhoBolted)
 		player->GetCurrentCard()->isBolted = true;
 		totalPlayerSum = oldPlayerSum;
 		onPlayerScored.Broadcast(totalPlayerSum);
+		PreCheck();
 	}
 }
 

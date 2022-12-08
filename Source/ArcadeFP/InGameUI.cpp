@@ -17,6 +17,7 @@ void UInGameUI::NativeConstruct()
 	playerCharacter = Cast<ABaseCharacter>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	gameInstance->onTokenUpdated.AddDynamic(this, &UInGameUI::UpdateTokenText);
 	startGameEasy->OnReleased.AddDynamic(this, &UInGameUI::StartWAMGame);
+	startCardGameButton->OnReleased.AddDynamic(this, &UInGameUI::StartWAMGame);
 	UpdateTokenText(gameInstance->GetCurrentTokenCount());
 }
 

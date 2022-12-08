@@ -40,6 +40,7 @@ void UInteracter::InitiateInteract()
 	if (interactable)
 	{
 		interactable->Interact(GetOwner());
+		
 	}
 
 

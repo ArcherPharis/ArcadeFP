@@ -66,6 +66,7 @@ void ABaseCharacter::Interact()
 		if (arcade)
 		{
 			onInteract.Broadcast(arcade);
+			InteractEffect();
 			interacter->InitiateInteract();
 		}
 	

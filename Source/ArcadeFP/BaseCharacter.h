@@ -35,6 +35,9 @@ public:
 
 	void InitCurrentInteractable();
 
+	UFUNCTION(BlueprintImplementableEvent, Category = "Interactor")
+	void InteractEffect();
+
 private:
 	UPROPERTY(EditDefaultsOnly, Category = "PlayerSetup")
 	class UInteracter* interacter;
