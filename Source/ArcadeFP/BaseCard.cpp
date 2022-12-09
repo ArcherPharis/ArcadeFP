@@ -22,6 +22,7 @@ void ABaseCard::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	
 }
 
 // Called every frame
@@ -37,6 +38,10 @@ void ABaseCard::UseSpecialEffect()
 	{
 		FRotator rot = FRotator(FMath::Abs(GetActorRotation().Pitch), GetActorRotation().Yaw, GetActorRotation().Roll);
 		UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), specialEffectFX, GetActorLocation(), rot);
+		if (playedSound)
+		{
+			UGameplayStatics::PlaySoundAtLocation(this, playedSound, GetActorLocation());
+		}
 	}
 }
 

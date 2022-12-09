@@ -34,6 +34,8 @@ public:
 
 	virtual void UseSpecialEffect();
 
+	
+
 private:
 	
 	UPROPERTY(EditDefaultsOnly, Category = "Card")
@@ -47,5 +49,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Card")
 	int cardValue;
+	UPROPERTY(EditDefaultsOnly, Category = "Card")
+	USoundBase* playedSound;
 
 };
