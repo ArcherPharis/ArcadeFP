@@ -5,5 +5,7 @@
 
 void UArcadeGameInstance::SetTokenCount(int amount)
 {
-	Tokens += amount;
+	Tokens = FMath::Clamp(Tokens += amount, 0, 999999);
+	UE_LOG(LogTemp, Warning, TEXT("%i"), Tokens);
+	
 }

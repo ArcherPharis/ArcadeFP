@@ -17,10 +17,14 @@ class ARCADEFP_API ACardController : public APlayerController
 public:
 	void BeginPlay() override;
 
+	void SetResults(int score, int tokens);
+
 
 
 private:
 	class UCardGameUI* inGameUI;
+
+	
 
 	UPROPERTY(EditAnywhere, Category = "UI")
 	TSubclassOf<UCardGameUI> inGameUIClass;
@@ -29,5 +33,10 @@ private:
 	
 
 	class ACardGameMode* gameMode;
+
+	FTimerHandle handle;
+	float time = 3;
+
+	void GoBack();
 
 };

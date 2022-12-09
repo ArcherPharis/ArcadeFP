@@ -4,6 +4,7 @@
 #include "BaseArcadeMachine.h"
 #include "InteractableComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "ArcadeGameInstance.h"
 
 // Sets default values
 ABaseArcadeMachine::ABaseArcadeMachine()
@@ -34,6 +35,9 @@ void ABaseArcadeMachine::BeginGame(AActor* interactor)
 void ABaseArcadeMachine::LoadLevel(FName levelName)
 {
 	UGameplayStatics::OpenLevel(GetWorld(), levelName);
+	UArcadeGameInstance* gameInstance = Cast<UArcadeGameInstance>(UGameplayStatics::GetGameInstance(GetWorld()));
+	gameInstance->SetTokenCount(-tokenCost);
+	
 	
 }
 

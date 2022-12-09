@@ -28,4 +28,15 @@ void ACardController::BeginPlay()
 	
 }
 
+void ACardController::SetResults(int score, int tokens)
+{
+	inGameUI->SetResultsScreen(score,tokens);
+	GetWorldTimerManager().SetTimer(handle, this, &ACardController::GoBack, time, false);
+}
+
+void ACardController::GoBack()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), "Arcade");
+}
+
 

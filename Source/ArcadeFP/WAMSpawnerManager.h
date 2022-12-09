@@ -35,6 +35,10 @@ private:
 	void SpawnLogicHard(int amountToSpawn);
 	void EndGame();
 
+
 	int round = 1;
+
+	FTimerHandle ResultTimerHandle;
+	float time = 10.f;
 
 };

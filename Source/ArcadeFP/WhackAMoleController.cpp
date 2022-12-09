@@ -28,13 +28,21 @@ void AWhackAMoleController::FinalScore()
 	ABaseArcadeGameMode* gameMode = Cast<ABaseArcadeGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
 	if (gameMode)
 	{
+		int tokens;
+		gameMode->ConvertScoreToTokens(currentGameScore, tokens);
+		inGameUI->SetResultsScreen(currentGameScore, tokens);
+		GetWorldTimerManager().SetTimer(handle, this, &AWhackAMoleController::GoBack, time, false);
 		
-		gameMode->ConvertScoreToTokens(currentGameScore);
 	}
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("can't find gamemode"));
 	}
 
+}
+
+void AWhackAMoleController::GoBack()
+{
+	UGameplayStatics::OpenLevel(GetWorld(), "Arcade");
 }
 

@@ -6,6 +6,7 @@
 #include "CardGamePlayer.h"
 #include "EnemyCardPlayer.h"
 #include "Kismet/GameplayStatics.h"
+#include "CardController.h"
 
 ACardGameMode::ACardGameMode()
 {
@@ -15,6 +16,7 @@ ACardGameMode::ACardGameMode()
 void ACardGameMode::BeginPlay()
 {
 	Super::BeginPlay();
+	controller = Cast<ACardController>(UGameplayStatics::GetPlayerController(this, 0));
 	
 	
 }
@@ -22,6 +24,7 @@ void ACardGameMode::BeginPlay()
 void ACardGameMode::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
 	//UE_LOG(LogTemp, Warning, TEXT("%i"), oldPlayerSum);
 	
 }
@@ -307,11 +310,17 @@ void ACardGameMode::Flip(ABaseCardPlayer* playerWhoFlipped)
 void ACardGameMode::GameOver()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player Lost"));
+	int tokens;
+	ConvertScoreToTokens(0, tokens);
+	controller->SetResults(0, tokens);
 }
 
 void ACardGameMode::PlayerWon()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Player Won"));
+	int tokens;
+	ConvertScoreToTokens(300, tokens);
+	controller->SetResults(300, tokens);
 
 }
 

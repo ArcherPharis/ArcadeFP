@@ -53,4 +53,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = "ArcadeMachineSetup")
 	FName nameOfLevel = "WhackAMole";
 
+	UPROPERTY(EditDefaultsOnly, Category = "ArcadeMachineSetup")
+	int tokenCost = 5;
+
 };

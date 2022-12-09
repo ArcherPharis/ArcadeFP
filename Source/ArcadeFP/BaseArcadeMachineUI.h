@@ -17,6 +17,7 @@ class ARCADEFP_API UBaseArcadeMachineUI : public UUserWidget
 public:
 
 	void SetScoreText(int newScore);
+	void SetResultsScreen(int finalScore, int tokensWon);
 
 	
 
@@ -26,5 +27,20 @@ protected:
 private:
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* scoreText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* finalScoreText;
+
+	UPROPERTY(meta = (BindWidget))
+	UTextBlock* tokensWonText;
+
+	UPROPERTY(meta = (BindWidget))
+	class UCanvasPanel* inGameCanvas;
+
+	UPROPERTY(meta = (BindWidget))
+	UCanvasPanel* resultsCanvas;
+
+	UPROPERTY(meta = (BindWidget))
+	class UWidgetSwitcher* canvasSwitcher;
 	
 };

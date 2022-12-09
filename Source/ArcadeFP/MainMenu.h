@@ -3,23 +3,17 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseArcadeMachineUI.h"
-#include "WhackAMoleUI.generated.h"
+#include "GameFramework/GameModeBase.h"
+#include "MainMenu.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class ARCADEFP_API UWhackAMoleUI : public UBaseArcadeMachineUI
+class ARCADEFP_API AMainMenu : public AGameModeBase
 {
 	GENERATED_BODY()
 
-public:
-
-	
-
-
-private:
 
 	
 };

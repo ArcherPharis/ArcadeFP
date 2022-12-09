@@ -77,7 +77,7 @@ public:
 
 private:
 
-	
+	class ACardController* controller;
 
 	UPROPERTY(EditDefaultsOnly, Category = "Player Score")
 	int totalPlayerSum = 0;

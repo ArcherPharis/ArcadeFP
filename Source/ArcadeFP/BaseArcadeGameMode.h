@@ -20,7 +20,7 @@ public:
 
 	void BeginPlay() override;
 
-	void ConvertScoreToTokens(int finalScore);
+	void ConvertScoreToTokens(int finalScore, int& tokensObtained);
 
 private:
 

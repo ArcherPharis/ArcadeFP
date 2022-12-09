@@ -61,7 +61,8 @@ void ABaseCharacter::Interact()
 {
 	if (interacter->GetInteractable())
 	{
-		
+		controller->SetInputMode(FInputModeUIOnly());
+		controller->SetShowMouseCursor(true);
 		ABaseArcadeMachine* arcade = Cast<ABaseArcadeMachine>(interacter->GetInteractable()->GetOwner());
 		if (arcade)
 		{

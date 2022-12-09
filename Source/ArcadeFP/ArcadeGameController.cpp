@@ -15,10 +15,10 @@ AArcadeGameController::AArcadeGameController()
 void AArcadeGameController::BeginPlay()
 {
 	Super::BeginPlay();
+	SetInputMode(FInputModeGameOnly());
+	SetShowMouseCursor(false);
 	if (inGameUIClass)
 	{
-		//TODO, the UI needs to know what game is currently being played. If it's the arcade, it loads
-		//the arcade ui, if whack a mole, the whack a mole ui, etc.
 		inGameUI = CreateWidget<UInGameUI>(this, inGameUIClass);
 		inGameUI->AddToViewport();
 	}
