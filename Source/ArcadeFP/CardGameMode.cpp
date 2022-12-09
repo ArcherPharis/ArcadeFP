@@ -112,6 +112,7 @@ void ACardGameMode::FindLowestPossibleCard()
 				onEnemyScored.Broadcast(totalEnemySum);
 				resCard->SetActorRotation(FRotator(180, resCard->GetActorRotation().Yaw, resCard->GetActorRotation().Roll));
 				currentTurnPlayer = player;
+				PreCheck();
 				return;
 			}
 		}
@@ -159,6 +160,7 @@ void ACardGameMode::FindLowestPossibleCard()
 			totalEnemySum += lowestCard->GetCardValue();
 			onEnemyScored.Broadcast(totalEnemySum);
 			lowestCard->SetActorRotation(FRotator(180, lowestCard->GetActorRotation().Yaw, lowestCard->GetActorRotation().Roll));
+			PreCheck();
 			currentTurnPlayer = player;
 		}
 	}
@@ -182,6 +184,7 @@ void ACardGameMode::FindLowestPossibleCard()
 			totalEnemySum += specialCard->GetCardValue();
 			onEnemyScored.Broadcast(totalEnemySum);
 			specialCard->SetActorRotation(FRotator(180, specialCard->GetActorRotation().Yaw, specialCard->GetActorRotation().Roll));
+			PreCheck();
 			currentTurnPlayer = player;
 		}
 		else
